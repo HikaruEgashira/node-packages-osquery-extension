@@ -141,7 +141,6 @@ func TestPackageManagerScans(t *testing.T) {
 		{"yarn", ScanYarn},
 		{"bun", ScanBun},
 		{"deno", ScanDeno},
-		{"jsr", ScanJsr},
 	}
 
 	for _, tt := range tests {

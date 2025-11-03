@@ -43,7 +43,7 @@ HAVING manager_count > 1;
 -- 9. List Deno packages
 SELECT name, version
 FROM node_packages
-WHERE manager IN ('deno', 'jsr');
+WHERE manager = 'deno';
 
 -- 10. Search by cache path
 SELECT name, version, manager

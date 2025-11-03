@@ -27,14 +27,13 @@ osqueryi --extension $(which node_packages_extension)
 
 ## Features
 
-| Package Manager | Cache Locations                                      | Supported | Notes                    |
-|-----------------|------------------------------------------------------|-----------|--------------------------|
-| npm             | `~/.npm`, global `node_modules`                      | Yes       |                          |
-| pnpm            | `~/.pnpm-store`, `~/.local/share/pnpm/store`         | Yes       |                          |
-| yarn            | `~/.yarn-cache`, `~/.cache/yarn` (Yarn v1)           | Yes       |                          |
-| bun             | `~/.bun/install/cache`                               | Yes       |                          |
-| deno            | `~/.cache/deno/npm`, `$DENO_DIR`                     | Yes       |                          |
-| jsr             | Deno cache (JSR packages)                            | Yes       | Scanned via Deno cache   |
+| Package Manager | Cache Locations                                      | Supported |
+|-----------------|------------------------------------------------------|-----------|
+| npm             | `~/.npm`, global `node_modules`                      | Yes       |
+| pnpm            | `~/.pnpm-store`, `~/.local/share/pnpm/store`         | Yes       |
+| yarn            | `~/.yarn-cache`, `~/.cache/yarn` (Yarn v1)           | Yes       |
+| bun             | `~/.bun/install/cache`                               | Yes       |
+| deno            | `~/.cache/deno/npm`, `$DENO_DIR`                     | Yes       |
 
 ## Table Schema
 
@@ -49,7 +48,7 @@ CREATE TABLE node_packages (
 
 - `name`: Package name
 - `version`: Package version
-- `manager`: Package manager (npm, pnpm, yarn, bun, deno, jsr)
+- `manager`: Package manager (npm, pnpm, yarn, bun, deno)
 - `cache_path`: Path to the package.json in cache
 
 ## Query Examples

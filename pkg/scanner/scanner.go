@@ -35,7 +35,6 @@ func ScanAllManagers() ([]Package, error) {
 		{"yarn", ScanYarn},
 		{"bun", ScanBun},
 		{"deno", ScanDeno},
-		{"jsr", ScanJsr},
 	}
 
 	// Scan all managers concurrently
@@ -177,14 +176,3 @@ func ScanDeno() ([]Package, error) {
 	})
 }
 
-func ScanJsr() ([]Package, error) {
-	home, _ := os.UserHomeDir()
-	if home == "" {
-		return []Package{}, nil
-	}
-	denoDir := os.Getenv("DENO_DIR")
-	if denoDir == "" {
-		denoDir = filepath.Join(home, ".cache", "deno")
-	}
-	return scanDirectory(filepath.Join(denoDir, "deps", "https", "jsr.io"), "jsr")
-}
