@@ -120,7 +120,9 @@ jobs:
           chmod 755 "$EXTENSION_PATH"
 
           # On Linux/macOS, change owner to root (required by osquery)
-          if [ "${{ runner.os }}" != "Windows" ]; then
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            sudo chown root:wheel "$EXTENSION_PATH"
+          elif [ "${{ runner.os }}" == "Linux" ]; then
             sudo chown root:root "$EXTENSION_PATH"
           fi
 
