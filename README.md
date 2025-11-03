@@ -99,29 +99,6 @@ SELECT DISTINCT name, version FROM node_packages ORDER BY name;
 
 See [example_queries.sql](example_queries.sql) for more SQL query examples.
 
-## Testing
-
-### Run all tests
-
-```bash
-go test -v ./...
-```
-
-### Run tests with coverage
-
-```bash
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out -o coverage.html
-```
-
-This will generate a `coverage.html` file that you can open in your browser.
-
-### Run specific tests
-
-```bash
-go test -v ./pkg/scanner -run TestScanAllManagers
-```
-
 ## Cache Locations
 
 The extension scans the following default locations:
