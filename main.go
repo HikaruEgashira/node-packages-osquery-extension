@@ -89,8 +89,10 @@ func main() {
 		return results, nil
 	}))
 
-	log.Printf("Starting node_packages extension...")
+	log.Printf("Starting node_packages extension on socket: %s", *socket)
+	log.Printf("Registered table: node_packages")
 	if err := server.Run(); err != nil {
 		log.Fatalf("Error running extension: %v", err)
 	}
+	log.Printf("Extension stopped")
 }
