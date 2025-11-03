@@ -99,49 +99,6 @@ SELECT DISTINCT name, version FROM node_packages ORDER BY name;
 
 See [example_queries.sql](example_queries.sql) for more SQL query examples.
 
-## Cache Locations
-
-The extension scans the following default locations:
-
-### npm
-- `~/.npm`
-- `/usr/local/lib/node_modules`
-- `/usr/lib/node_modules`
-- Global node_modules paths
-
-### pnpm
-- `~/.pnpm-store`
-- `~/.local/share/pnpm/store`
-- `~/Library/pnpm/store` (macOS)
-- `$PNPM_HOME/store`
-
-### yarn
-- `~/.yarn-cache` (Yarn v1 old)
-- `~/.cache/yarn` (Yarn v1 new)
-- `~/Library/Caches/Yarn` (macOS)
-- `$YARN_CACHE_FOLDER`
-
-### bun
-- `~/.bun/install/cache`
-- `~/.bun/install/global`
-
-### deno
-- `$DENO_DIR/npm`
-- `$DENO_DIR/deps/https`
-- `~/.cache/deno` (default)
-
-### jsr
-- `$DENO_DIR/deps/https/jsr.io`
-- `~/.cache/deno/deps/https/jsr.io` (default)
-
-## Performance
-
-The extension uses efficient scanning:
-- **Concurrent processing**: All package managers scanned in parallel
-- **Permission-safe**: Gracefully handles permission errors
-- **Memory efficient**: Streams large directories
-- **Fast JSON parsing**: Standard library performance
-
 ## Building from Source
 
 ### Prerequisites
