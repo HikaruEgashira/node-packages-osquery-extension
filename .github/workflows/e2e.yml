@@ -115,13 +115,20 @@ jobs:
           else
             EXTENSION_PATH="./node_packages_extension"
           fi
-          chmod +x "$EXTENSION_PATH" || true
+
+          # Set proper permissions for osquery security requirements
+          chmod 755 "$EXTENSION_PATH"
+
+          # On Linux/macOS, change owner to root (required by osquery)
+          if [ "${{ runner.os }}" != "Windows" ]; then
+            sudo chown root:root "$EXTENSION_PATH"
+          fi
 
           # Debug: Check osquery version and extensions
           echo "=== osquery version ==="
           osqueryi --version || echo "osqueryi --version failed"
 
-          echo "=== Extension path ==="
+          echo "=== Extension path and permissions ==="
           ls -lh "$EXTENSION_PATH"
 
           # Debug: Try to run extension directly to see if it starts
@@ -172,14 +179,14 @@ jobs:
           osqueryi --extension ./node_packages_extension \
             --ephemeral \
             --json \
-            "SELECT name, version, manager FROM node_packages WHERE manager = 'npm';" > npm_packages.json || true
+            "SELECT name, version, manager FROM node_packages WHERE manager = 'npm';" 2>&1 | tee npm_packages.json || true
 
           # Test 3: Count by manager
           echo "Test 3: Counting packages by manager..."
           osqueryi --extension ./node_packages_extension \
             --ephemeral \
             --json \
-            "SELECT manager, COUNT(*) as count FROM node_packages GROUP BY manager;" > manager_counts.json || true
+            "SELECT manager, COUNT(*) as count FROM node_packages GROUP BY manager;" 2>&1 | tee manager_counts.json || true
 
           # Display results
           echo "=== NPM Packages ==="
