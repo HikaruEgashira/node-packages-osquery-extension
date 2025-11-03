@@ -2,6 +2,23 @@
 
 osquery extension written in Go to discover installed Node.js packages by scanning package manager caches.
 
+## Quick Start
+
+```bash
+# Clone and build
+git clone https://github.com/HikaruEgashira/node-packages-osquery-extension.git
+cd node-packages-osquery-extension
+go build -o node_packages_extension .
+
+# Run with osquery
+osqueryi --extension ./node_packages_extension
+```
+
+Then query your packages:
+```sql
+SELECT * FROM node_packages;
+```
+
 ## Features
 
 This extension provides a `node_packages` table that scans various package manager caches to discover installed Node.js packages:
@@ -31,6 +48,23 @@ CREATE TABLE node_packages (
 - `manager`: Package manager (npm, pnpm, yarn, bun, deno, jsr)
 - `cache_path`: Path to the package.json in cache
 
+## Installation
+
+### System-wide Installation
+
+```bash
+# Build and install to /usr/local/bin
+go build -o node_packages_extension .
+sudo cp node_packages_extension /usr/local/bin/
+sudo chown root:root /usr/local/bin/node_packages_extension
+sudo chmod 755 /usr/local/bin/node_packages_extension
+```
+
+Then add to `/etc/osquery/extensions.load`:
+```
+/usr/local/bin/node_packages_extension
+```
+
 ## Building
 
 ### Prerequisites
@@ -53,35 +87,6 @@ go build -o node_packages_extension .
 
 # Run tests
 go test -v ./...
-```
-
-## Installation
-
-### Quick Start
-
-1. Build the extension:
-```bash
-go build -o node_packages_extension .
-```
-
-2. Run osquery with the extension:
-```bash
-osqueryi --extension ./node_packages_extension
-```
-
-### System-wide Installation
-
-```bash
-# Build and install to /usr/local/bin
-go build -o node_packages_extension .
-sudo cp node_packages_extension /usr/local/bin/
-sudo chown root:root /usr/local/bin/node_packages_extension
-sudo chmod 755 /usr/local/bin/node_packages_extension
-```
-
-Then add to `/etc/osquery/extensions.load`:
-```
-/usr/local/bin/node_packages_extension
 ```
 
 ## Usage
