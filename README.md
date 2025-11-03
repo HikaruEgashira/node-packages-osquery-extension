@@ -13,14 +13,6 @@ This extension provides a `node_packages` table that scans various package manag
 - **deno**: Scans `~/.cache/deno/npm`, `$DENO_DIR`
 - **jsr**: Scans JSR packages through Deno cache
 
-### Why Go?
-
-- ✅ **Concurrent scanning**: Scans all package managers in parallel using goroutines
-- ✅ **Cross-platform**: Easy to compile for Linux, macOS, Windows
-- ✅ **Single binary**: No runtime dependencies
-- ✅ **Standard JSON parsing**: Built-in encoding/json package
-- ✅ **Memory safe**: Automatic garbage collection
-
 ## Table Schema
 
 ```sql
