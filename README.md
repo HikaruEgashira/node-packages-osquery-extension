@@ -116,6 +116,8 @@ SELECT * FROM node_packages WHERE name LIKE '%react%';
 SELECT DISTINCT name, version FROM node_packages ORDER BY name;
 ```
 
+See [example_queries.sql](example_queries.sql) for more SQL query examples.
+
 ## Testing
 
 ### Run all tests
@@ -189,7 +191,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 ## License
 
 MIT
-
-## Example Queries
-
-See [example_queries.sql](example_queries.sql) for more SQL query examples.
