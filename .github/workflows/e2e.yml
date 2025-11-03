@@ -124,10 +124,18 @@ jobs:
           echo "=== Extension path ==="
           ls -lh "$EXTENSION_PATH"
 
+          # Debug: Try to run extension directly to see if it starts
+          echo "=== Testing extension binary directly ==="
+          "$EXTENSION_PATH" --help || echo "Extension help failed"
+
           # Debug: Check if extension can be loaded
           echo "=== Checking if extension loads ==="
           osqueryi --extension "$EXTENSION_PATH" --ephemeral --json "SELECT * FROM osquery_extensions;" 2>&1 | tee extension_check.json
           echo "Extension check done"
+
+          # Debug: Check if extension table is registered
+          echo "=== Checking available tables ==="
+          osqueryi --extension "$EXTENSION_PATH" --ephemeral --json "SELECT name FROM osquery_registry WHERE registry = 'table' AND name LIKE '%node%';" 2>&1 | tee tables_check.json
 
           # Test 1: Query all packages
           echo "=== Test 1: Querying all packages ==="
