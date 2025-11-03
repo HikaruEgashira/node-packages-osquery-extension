@@ -21,25 +21,20 @@ For other installation methods, see the [releases page](https://github.com/Hikar
 ## Quick Start
 
 ```bash
-# Run with osquery
 osqueryi --extension ./node_packages_extension
-```
-
-Then query your packages:
-```sql
-SELECT * FROM node_packages;
+> SELECT * FROM node_packages;
 ```
 
 ## Features
 
 This extension provides a `node_packages` table that scans various package manager caches to discover installed Node.js packages:
 
-- **npm**: Scans `~/.npm`, global node_modules
-- **pnpm**: Scans `~/.pnpm-store`, `~/.local/share/pnpm/store`
-- **yarn**: Scans `~/.yarn-cache`, `~/.cache/yarn` (Yarn v1)
-- **bun**: Scans `~/.bun/install/cache`
-- **deno**: Scans `~/.cache/deno/npm`, `$DENO_DIR`
-- **jsr**: Scans JSR packages through Deno cache
+- npm: Scans `~/.npm`, global node_modules
+- pnpm: Scans `~/.pnpm-store`, `~/.local/share/pnpm/store`
+- yarn: Scans `~/.yarn-cache`, `~/.cache/yarn` (Yarn v1)
+- bun: Scans `~/.bun/install/cache`
+- deno: Scans `~/.cache/deno/npm`, `$DENO_DIR`
+- jsr: Scans JSR packages through Deno cache
 
 ## Table Schema
 
@@ -52,28 +47,12 @@ CREATE TABLE node_packages (
 );
 ```
 
-### Columns
-
 - `name`: Package name
 - `version`: Package version
 - `manager`: Package manager (npm, pnpm, yarn, bun, deno, jsr)
 - `cache_path`: Path to the package.json in cache
 
-### System-wide Installation
-
-```bash
-# Move binary to /usr/local/bin
-sudo mv node_packages_extension /usr/local/bin/
-sudo chown root:root /usr/local/bin/node_packages_extension
-sudo chmod 755 /usr/local/bin/node_packages_extension
-```
-
-Then add to `/etc/osquery/extensions.load`:
-```
-/usr/local/bin/node_packages_extension
-```
-
-## Usage
+## Query Examples
 
 ### Query all packages
 
@@ -106,30 +85,6 @@ SELECT DISTINCT name, version FROM node_packages ORDER BY name;
 ```
 
 See [example_queries.sql](example_queries.sql) for more SQL query examples.
-
-## Building from Source
-
-### Prerequisites
-
-- Go 1.21 or higher
-- osquery installed on your system
-
-### Build Instructions
-
-```bash
-# Clone the repository
-git clone https://github.com/HikaruEgashira/node-packages-osquery-extension.git
-cd node-packages-osquery-extension
-
-# Download dependencies
-go mod download
-
-# Build the extension
-go build -o node_packages_extension .
-
-# Run tests
-go test -v ./...
-```
 
 ## Contributing
 
