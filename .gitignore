@@ -12,7 +12,6 @@ coverage.html
 
 # Go
 vendor/
-go.sum
 
 # IDE
 .vscode/
