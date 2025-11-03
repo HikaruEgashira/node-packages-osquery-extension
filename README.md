@@ -46,19 +46,13 @@ git clone https://github.com/HikaruEgashira/node-packages-osquery-extension.git
 cd node-packages-osquery-extension
 
 # Download dependencies
-make deps
+go mod download
 
 # Build the extension
-make build
+go build -o node_packages_extension .
 
 # Run tests
-make test
-```
-
-Or build manually:
-
-```bash
-go build -o node_packages_extension .
+go test -v ./...
 ```
 
 ## Installation
@@ -67,7 +61,7 @@ go build -o node_packages_extension .
 
 1. Build the extension:
 ```bash
-make build
+go build -o node_packages_extension .
 ```
 
 2. Run osquery with the extension:
@@ -78,7 +72,11 @@ osqueryi --extension ./node_packages_extension
 ### System-wide Installation
 
 ```bash
-make install
+# Build and install to /usr/local/bin
+go build -o node_packages_extension .
+sudo cp node_packages_extension /usr/local/bin/
+sudo chown root:root /usr/local/bin/node_packages_extension
+sudo chmod 755 /usr/local/bin/node_packages_extension
 ```
 
 Then add to `/etc/osquery/extensions.load`:
@@ -123,13 +121,14 @@ SELECT DISTINCT name, version FROM node_packages ORDER BY name;
 ### Run all tests
 
 ```bash
-make test
+go test -v ./...
 ```
 
 ### Run tests with coverage
 
 ```bash
-make test-verbose
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out -o coverage.html
 ```
 
 This will generate a `coverage.html` file that you can open in your browser.
@@ -183,63 +182,13 @@ The extension uses efficient scanning:
 - **Memory efficient**: Streams large directories
 - **Fast JSON parsing**: Standard library performance
 
-## Troubleshooting
+## Contributing
 
-### No packages found
-
-```bash
-# Verify package manager caches exist
-ls -la ~/.npm
-ls -la ~/.pnpm-store
-ls -la ~/.bun
-
-# Run tests to see what's detected
-make test
-```
-
-### Extension fails to load
-
-```bash
-# Check osquery is running
-osqueryi --version
-
-# Run with verbose logging
-./node_packages_extension --socket /path/to/osquery.sock
-```
-
-### Build errors
-
-```bash
-# Ensure Go is installed
-go version
-
-# Clean and rebuild
-make clean
-make deps
-make build
-```
-
-## Security Considerations
-
-- ✅ Read-only operations
-- ✅ Permission errors handled gracefully
-- ✅ No network access
-- ✅ No cache modification
-- ✅ Memory-safe Go implementation
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## License
 
 MIT
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure `make test` passes
-5. Submit a pull request
 
 ## Example Queries
 

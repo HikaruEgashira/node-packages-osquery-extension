@@ -7,7 +7,7 @@ osquery-node-packages
 *.dylib
 
 # Test coverage
-*.out
+coverage.out
 coverage.html
 
 # Go

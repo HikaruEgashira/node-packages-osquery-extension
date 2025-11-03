@@ -8,7 +8,7 @@ Thank you for considering contributing to this project! This document provides g
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
 4. Add tests for new functionality
-5. Ensure all tests pass (`make test`)
+5. Ensure all tests pass (`go test ./...`)
 6. Commit your changes with conventional commits
 7. Push to your fork (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
@@ -24,19 +24,20 @@ Thank you for considering contributing to this project! This document provides g
 
 ```bash
 # Install dependencies
-make deps
+go mod download
 
 # Build the extension
-make build
+go build -o node_packages_extension .
 
 # Run tests
-make test
+go test -v ./...
 
 # Run tests with coverage
-make test-verbose
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out -o coverage.html
 
 # Format code
-make fmt
+go fmt ./...
 ```
 
 ### Project Structure
