@@ -21,20 +21,20 @@ For other installation methods, see the [releases page](https://github.com/Hikar
 ## Quick Start
 
 ```bash
-osqueryi --extension ./node_packages_extension
+osqueryi --extension $(which node_packages_extension)
 > SELECT * FROM node_packages;
 ```
 
 ## Features
 
-This extension provides a `node_packages` table that scans various package manager caches to discover installed Node.js packages:
-
-- npm: Scans `~/.npm`, global node_modules
-- pnpm: Scans `~/.pnpm-store`, `~/.local/share/pnpm/store`
-- yarn: Scans `~/.yarn-cache`, `~/.cache/yarn` (Yarn v1)
-- bun: Scans `~/.bun/install/cache`
-- deno: Scans `~/.cache/deno/npm`, `$DENO_DIR`
-- jsr: Scans JSR packages through Deno cache
+| Package Manager | Cache Locations                                      | Supported | Notes                    |
+|-----------------|------------------------------------------------------|-----------|--------------------------|
+| npm             | `~/.npm`, global `node_modules`                      | Yes       |                          |
+| pnpm            | `~/.pnpm-store`, `~/.local/share/pnpm/store`         | Yes       |                          |
+| yarn            | `~/.yarn-cache`, `~/.cache/yarn` (Yarn v1)           | Yes       |                          |
+| bun             | `~/.bun/install/cache`                               | Yes       |                          |
+| deno            | `~/.cache/deno/npm`, `$DENO_DIR`                     | Yes       |                          |
+| jsr             | Deno cache (JSR packages)                            | Yes       | Scanned via Deno cache   |
 
 ## Table Schema
 
