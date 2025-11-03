@@ -151,24 +151,12 @@ jobs:
 
           # Debug: Check if extension can be loaded
           echo "=== Checking if extension loads ==="
-          osqueryi --extension "$EXTENSION_PATH" --ephemeral --verbose --json "SELECT * FROM osquery_extensions;" 2>&1 | tee extension_check.json
+          osqueryi --extension "$EXTENSION_PATH" --ephemeral --extensions_timeout 10 --verbose --json "SELECT * FROM osquery_extensions;" 2>&1 | tee extension_check.json
           echo "Extension check done"
 
-          # Debug: Check if extension table is registered with retry
-          echo "=== Checking available tables ==="
-          for i in {1..10}; do
-            osqueryi --extension "$EXTENSION_PATH" --ephemeral --verbose --json "SELECT name FROM osquery_registry WHERE registry = 'table' AND name LIKE '%node%';" 2>&1 | tee tables_check.json
-            if grep -q '"node_packages"' tables_check.json; then
-              echo "Extension table registered successfully"
-              break
-            fi
-            echo "Attempt $i: Extension table not yet registered, waiting..."
-            sleep 1
-          done
-
-          # Test 1: Query all packages
+          # Test 1: Query all packages (with extension timeout)
           echo "=== Test 1: Querying all packages ==="
-          osqueryi --extension "$EXTENSION_PATH" --ephemeral --verbose --json "SELECT * FROM node_packages;" 2>&1 | tee results.json
+          osqueryi --extension "$EXTENSION_PATH" --ephemeral --extensions_timeout 10 --verbose --json "SELECT * FROM node_packages;" 2>&1 | tee results.json
 
           EXIT_CODE=${PIPESTATUS[0]}
           echo "Exit code: $EXIT_CODE"
@@ -200,6 +188,7 @@ jobs:
           echo "Test 2: Querying npm packages..."
           osqueryi --extension ./node_packages_extension \
             --ephemeral \
+            --extensions_timeout 10 \
             --json \
             "SELECT name, version, manager FROM node_packages WHERE manager = 'npm';" 2>&1 | tee npm_packages.json || true
 
@@ -207,6 +196,7 @@ jobs:
           echo "Test 3: Counting packages by manager..."
           osqueryi --extension ./node_packages_extension \
             --ephemeral \
+            --extensions_timeout 10 \
             --json \
             "SELECT manager, COUNT(*) as count FROM node_packages GROUP BY manager;" 2>&1 | tee manager_counts.json || true
 
