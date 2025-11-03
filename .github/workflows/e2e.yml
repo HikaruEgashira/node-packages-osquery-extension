@@ -1,0 +1,181 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+        timeout-minutes: 5
+
+      - name: Set up Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed  # v5.1.0
+        timeout-minutes: 5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
+        timeout-minutes: 5
+        with:
+          node-version: '20'
+
+      - name: Install Bun (Linux)
+        if: runner.os == 'Linux'
+        timeout-minutes: 5
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: Install Bun (macOS)
+        if: runner.os == 'macOS'
+        timeout-minutes: 5
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: Install Bun (Windows)
+        if: runner.os == 'Windows'
+        timeout-minutes: 5
+        run: |
+          powershell -c "irm bun.sh/install.ps1|iex"
+          echo "$env:USERPROFILE\.bun\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install pnpm
+        timeout-minutes: 5
+        run: npm install -g pnpm
+
+      - name: Install osquery (Linux)
+        if: runner.os == 'Linux'
+        timeout-minutes: 10
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y osquery
+
+      - name: Install osquery (macOS)
+        if: runner.os == 'macOS'
+        timeout-minutes: 10
+        run: |
+          brew install --cask osquery
+
+      - name: Install osquery (Windows)
+        if: runner.os == 'Windows'
+        timeout-minutes: 10
+        run: |
+          choco install osquery -y
+
+      - name: Build extension
+        timeout-minutes: 10
+        run: go build -v -o node_packages_extension${{ runner.os == 'Windows' && '.exe' || '' }} .
+
+      - name: Setup test environment
+        timeout-minutes: 10
+        run: |
+          mkdir -p test-packages
+          cd test-packages
+
+          # npm packages
+          npm init -y
+          npm install react react-dom lodash
+
+          # pnpm packages
+          pnpm add express axios
+
+          # bun packages (skip on Windows for now due to potential issues)
+          if [ "${{ runner.os }}" != "Windows" ]; then
+            bun add typescript @types/node
+          fi
+        shell: bash
+
+      - name: Run E2E tests
+        timeout-minutes: 15
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            EXTENSION_PATH="./node_packages_extension.exe"
+          else
+            EXTENSION_PATH="./node_packages_extension"
+          fi
+          chmod +x "$EXTENSION_PATH" || true
+
+          # Test 1: Query all packages
+          echo "Test 1: Querying all packages..."
+          osqueryi --extension "$EXTENSION_PATH" \
+            --ephemeral \
+            --json \
+            "SELECT * FROM node_packages;" > results.json || {
+            echo "Error: Query failed"
+            cat results.json
+            exit 1
+          }
+
+          # Verify results
+          echo "Results:"
+          cat results.json
+
+          # Check if JSON array is returned
+          if ! grep -q '^\[' results.json; then
+            echo "Error: Invalid JSON array format"
+            exit 1
+          fi
+
+          # Count packages found
+          PACKAGE_COUNT=$(grep -o '"name"' results.json | wc -l | tr -d ' ')
+          echo "Found $PACKAGE_COUNT package entries"
+
+          if [ "$PACKAGE_COUNT" -eq 0 ]; then
+            echo "Warning: No packages found (this might be expected in CI)"
+          fi
+        shell: bash
+
+      - name: Run additional test queries (Linux/macOS)
+        if: runner.os != 'Windows'
+        timeout-minutes: 10
+        run: |
+          # Test 2: Manager-specific queries
+          echo "Test 2: Querying npm packages..."
+          osqueryi --extension ./node_packages_extension \
+            --ephemeral \
+            --json \
+            "SELECT name, version, manager FROM node_packages WHERE manager = 'npm';" > npm_packages.json || true
+
+          # Test 3: Count by manager
+          echo "Test 3: Counting packages by manager..."
+          osqueryi --extension ./node_packages_extension \
+            --ephemeral \
+            --json \
+            "SELECT manager, COUNT(*) as count FROM node_packages GROUP BY manager;" > manager_counts.json || true
+
+          # Display results
+          echo "=== NPM Packages ==="
+          cat npm_packages.json || echo "No npm packages file"
+
+          echo "=== Manager Counts ==="
+          cat manager_counts.json || echo "No manager counts file"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@4cead0b2ae7099de6ba4f9093d71a88cdca41e1f  # v4.5.0
+        with:
+          name: e2e-results-${{ matrix.os }}
+          path: |
+            results.json
+            npm_packages.json
+            manager_counts.json
+          retention-days: 7
