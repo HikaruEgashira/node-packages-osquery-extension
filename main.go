@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/HikaruEgashira/osquery-extensions-node-packages/pkg/scanner"
+	"github.com/HikaruEgashira/node-packages-osquery-extension/pkg/scanner"
 	"github.com/osquery/osquery-go"
 	"github.com/osquery/osquery-go/plugin/table"
 )

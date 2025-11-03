@@ -1,0 +1,104 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: node-packages-osquery-extension
+    main: .
+    binary: node_packages_extension
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "6"
+      - "7"
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+      - -X main.builtBy=goreleaser
+
+source:
+  enabled: true
+  name_template: '{{ .ProjectName }}_{{ .Version }}_source'
+  format: 'tar.gz'
+
+archives:
+  - id: node-packages-osquery-extension
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: 'New Features'
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: 'Bug fixes'
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: 'Performance improvements'
+      regexp: '^.*?perf(\([[:word:]]+\))??!?:.+$'
+      order: 2
+    - title: 'Others'
+      order: 999
+
+release:
+  github:
+    owner: HikaruEgashira
+    name: node-packages-osquery-extension
+  draft: false
+  prerelease: auto
+  mode: append
+  header: |
+    ## Installation
+
+    ### Download Binary
+
+    Download the appropriate binary for your platform from the assets below.
+
+    ### Quick Start
+    ```bash
+    # Run with osquery
+    osqueryi --extension ./node_packages_extension
+    ```
+
+    ### System-wide Installation
+    ```bash
+    # Linux/macOS
+    sudo mv node_packages_extension /usr/local/bin/
+    sudo chown root:root /usr/local/bin/node_packages_extension
+    sudo chmod 755 /usr/local/bin/node_packages_extension
+    ```
