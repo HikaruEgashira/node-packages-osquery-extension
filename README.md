@@ -8,6 +8,18 @@ osquery extension written in Go to discover installed Node.js packages by scanni
 mise use -g github:HikaruEgashira/node-packages-osquery-extension
 ```
 
+**Important**: osquery requires extensions to be owned by root with specific permissions:
+
+```bash
+# Linux
+sudo chown root:root $(which node_packages_extension)
+sudo chmod 755 $(which node_packages_extension)
+
+# macOS
+sudo chown root:wheel $(which node_packages_extension)
+sudo chmod 755 $(which node_packages_extension)
+```
+
 For other installation methods, see the [releases page](https://github.com/HikaruEgashira/node-packages-osquery-extension/releases).
 
 ## Quick Start
