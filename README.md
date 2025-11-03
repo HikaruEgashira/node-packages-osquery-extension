@@ -20,9 +20,11 @@ For other installation methods, see the [releases page](https://github.com/Hikar
 
 ## Quick Start
 
+![Demo](assets/demo.gif)
+
 ```bash
 osqueryi --extension $(which node_packages_extension)
-> SELECT * FROM node_packages;
+> SELECT name, version, manager FROM node_packages;
 ```
 
 ## Features
@@ -55,11 +57,15 @@ CREATE TABLE node_packages (
 
 ### Query all packages
 
+![Query all packages](assets/demo-all.gif)
+
 ```sql
 SELECT * FROM node_packages;
 ```
 
 ### Query packages by manager
+
+![Query packages by manager](assets/demo-by-manager.gif)
 
 ```sql
 SELECT name, version FROM node_packages WHERE manager = 'npm';
@@ -67,17 +73,23 @@ SELECT name, version FROM node_packages WHERE manager = 'npm';
 
 ### Count packages per manager
 
+![Count packages per manager](assets/demo-count.gif)
+
 ```sql
 SELECT manager, COUNT(*) as count FROM node_packages GROUP BY manager;
 ```
 
 ### Find specific package
 
+![Find specific package](assets/demo-search.gif)
+
 ```sql
 SELECT * FROM node_packages WHERE name LIKE '%react%';
 ```
 
 ### List unique packages (across all managers)
+
+![List unique packages](assets/demo-unique.gif)
 
 ```sql
 SELECT DISTINCT name, version FROM node_packages ORDER BY name;
