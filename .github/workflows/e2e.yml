@@ -135,18 +135,18 @@ jobs:
           echo "=== Testing extension binary directly ==="
           "$EXTENSION_PATH" --help || echo "Extension help failed"
 
-          # Debug: Check if extension can be loaded
+          # Debug: Check if extension can be loaded with verbose logging
           echo "=== Checking if extension loads ==="
-          osqueryi --extension "$EXTENSION_PATH" --ephemeral --json "SELECT * FROM osquery_extensions;" 2>&1 | tee extension_check.json
+          osqueryi --extension "$EXTENSION_PATH --verbose" --ephemeral --verbose --json "SELECT * FROM osquery_extensions;" 2>&1 | tee extension_check.json
           echo "Extension check done"
 
           # Debug: Check if extension table is registered
           echo "=== Checking available tables ==="
-          osqueryi --extension "$EXTENSION_PATH" --ephemeral --json "SELECT name FROM osquery_registry WHERE registry = 'table' AND name LIKE '%node%';" 2>&1 | tee tables_check.json
+          osqueryi --extension "$EXTENSION_PATH --verbose" --ephemeral --verbose --json "SELECT name FROM osquery_registry WHERE registry = 'table' AND name LIKE '%node%';" 2>&1 | tee tables_check.json
 
-          # Test 1: Query all packages
+          # Test 1: Query all packages with verbose logging
           echo "=== Test 1: Querying all packages ==="
-          osqueryi --extension "$EXTENSION_PATH" --ephemeral --json "SELECT * FROM node_packages;" 2>&1 | tee results.json
+          osqueryi --extension "$EXTENSION_PATH --verbose" --ephemeral --verbose --json "SELECT * FROM node_packages;" 2>&1 | tee results.json
 
           EXIT_CODE=${PIPESTATUS[0]}
           echo "Exit code: $EXIT_CODE"
@@ -176,14 +176,14 @@ jobs:
         run: |
           # Test 2: Manager-specific queries
           echo "Test 2: Querying npm packages..."
-          osqueryi --extension ./node_packages_extension \
+          osqueryi --extension "./node_packages_extension --verbose" \
             --ephemeral \
             --json \
             "SELECT name, version, manager FROM node_packages WHERE manager = 'npm';" 2>&1 | tee npm_packages.json || true
 
           # Test 3: Count by manager
           echo "Test 3: Counting packages by manager..."
-          osqueryi --extension ./node_packages_extension \
+          osqueryi --extension "./node_packages_extension --verbose" \
             --ephemeral \
             --json \
             "SELECT manager, COUNT(*) as count FROM node_packages GROUP BY manager;" 2>&1 | tee manager_counts.json || true

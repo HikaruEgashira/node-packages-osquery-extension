@@ -53,6 +53,9 @@ func main() {
 		log.Printf("Using socket: %s", *socket)
 	}
 
+	if *verbose {
+		log.Printf("Creating extension manager server...")
+	}
 	server, err := osquery.NewExtensionManagerServer(
 		"node_packages_extension",
 		*socket,
@@ -62,6 +65,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error creating extension: %v", err)
 	}
+	if *verbose {
+		log.Printf("Extension manager server created successfully")
+	}
 
 	columns := []table.ColumnDefinition{
 		table.TextColumn("name"),
@@ -70,13 +76,22 @@ func main() {
 		table.TextColumn("cache_path"),
 	}
 
+	if *verbose {
+		log.Printf("Registering table plugin: node_packages")
+	}
 	server.RegisterPlugin(table.NewPlugin("node_packages", columns, func(ctx context.Context, queryContext table.QueryContext) ([]map[string]string, error) {
+		if *verbose {
+			log.Printf("Table query called for node_packages")
+		}
 		packages, err := scanner.ScanAllManagers()
 		if err != nil {
 			log.Printf("Error scanning packages: %v", err)
 			return []map[string]string{}, nil
 		}
 
+		if *verbose {
+			log.Printf("Found %d packages", len(packages))
+		}
 		var results []map[string]string
 		for _, pkg := range packages {
 			results = append(results, map[string]string{
@@ -88,6 +103,9 @@ func main() {
 		}
 		return results, nil
 	}))
+	if *verbose {
+		log.Printf("Table plugin registered successfully")
+	}
 
 	log.Printf("Starting node_packages extension on socket: %s", *socket)
 	log.Printf("Registered table: node_packages")
