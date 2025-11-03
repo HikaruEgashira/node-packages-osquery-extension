@@ -66,6 +66,9 @@ jobs:
         if: runner.os == 'Linux'
         timeout-minutes: 10
         run: |
+          # Add osquery repository
+          curl -L https://pkg.osquery.io/deb/pubkey.gpg | sudo gpg --dearmor -o /usr/share/keyrings/osquery-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/osquery-archive-keyring.gpg] https://pkg.osquery.io/deb deb main" | sudo tee /etc/apt/sources.list.d/osquery.list
           sudo apt-get update
           sudo apt-get install -y osquery
 
@@ -114,20 +117,32 @@ jobs:
           fi
           chmod +x "$EXTENSION_PATH" || true
 
+          # Debug: Check osquery version and extensions
+          echo "=== osquery version ==="
+          osqueryi --version || echo "osqueryi --version failed"
+
+          echo "=== Extension path ==="
+          ls -lh "$EXTENSION_PATH"
+
           # Test 1: Query all packages
-          echo "Test 1: Querying all packages..."
+          echo "=== Test 1: Querying all packages ==="
           osqueryi --extension "$EXTENSION_PATH" \
             --ephemeral \
             --json \
-            "SELECT * FROM node_packages;" > results.json || {
-            echo "Error: Query failed"
-            cat results.json
-            exit 1
-          }
+            "SELECT * FROM node_packages;" > results.json 2>&1
+
+          EXIT_CODE=$?
+          echo "Exit code: $EXIT_CODE"
 
           # Verify results
-          echo "Results:"
+          echo "=== Results ==="
           cat results.json
+
+          # Check if command succeeded
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "Error: osqueryi command failed with exit code $EXIT_CODE"
+            exit 1
+          fi
 
           # Check if JSON array is returned
           if ! grep -q '^\[' results.json; then
@@ -139,8 +154,9 @@ jobs:
           PACKAGE_COUNT=$(grep -o '"name"' results.json | wc -l | tr -d ' ')
           echo "Found $PACKAGE_COUNT package entries"
 
+          # Allow empty results for now (CI environment might not have packages)
           if [ "$PACKAGE_COUNT" -eq 0 ]; then
-            echo "Warning: No packages found (this might be expected in CI)"
+            echo "Warning: No packages found in CI environment"
           fi
         shell: bash
 
