@@ -171,7 +171,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@4cead0b2ae7099de6ba4f9093d71a88cdca41e1f  # v4.5.0
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-results-${{ matrix.os }}
           path: |
