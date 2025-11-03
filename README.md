@@ -4,7 +4,11 @@ osquery extension written in Go to discover installed Node.js packages by scanni
 
 ## Installation
 
-Download the latest release for your platform from the [releases page](https://github.com/HikaruEgashira/node-packages-osquery-extension/releases).
+```bash
+mise use -g github:HikaruEgashira/node-packages-osquery-extension
+```
+
+For other installation methods, see the [releases page](https://github.com/HikaruEgashira/node-packages-osquery-extension/releases).
 
 ## Quick Start
 
