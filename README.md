@@ -2,11 +2,11 @@
 
 osquery extension written in Go to discover installed Node.js packages by scanning package manager caches.
 
+## Installation
+
+Download the latest release for your platform from the [releases page](https://github.com/HikaruEgashira/node-packages-osquery-extension/releases).
+
 ## Quick Start
-
-### Option 1: Download Pre-built Binary (Recommended)
-
-Download the latest release for your platform from [Releases](https://github.com/HikaruEgashira/node-packages-osquery-extension/releases).
 
 ```bash
 # Run with osquery
@@ -16,18 +16,6 @@ osqueryi --extension ./node_packages_extension
 Then query your packages:
 ```sql
 SELECT * FROM node_packages;
-```
-
-### Option 2: Build from Source
-
-```bash
-# Clone and build
-git clone https://github.com/HikaruEgashira/node-packages-osquery-extension.git
-cd node-packages-osquery-extension
-go build -o node_packages_extension .
-
-# Run with osquery
-osqueryi --extension ./node_packages_extension
 ```
 
 ## Features
@@ -59,14 +47,11 @@ CREATE TABLE node_packages (
 - `manager`: Package manager (npm, pnpm, yarn, bun, deno, jsr)
 - `cache_path`: Path to the package.json in cache
 
-## Installation
-
 ### System-wide Installation
 
 ```bash
-# Build and install to /usr/local/bin
-go build -o node_packages_extension .
-sudo cp node_packages_extension /usr/local/bin/
+# Move binary to /usr/local/bin
+sudo mv node_packages_extension /usr/local/bin/
 sudo chown root:root /usr/local/bin/node_packages_extension
 sudo chmod 755 /usr/local/bin/node_packages_extension
 ```
@@ -74,30 +59,6 @@ sudo chmod 755 /usr/local/bin/node_packages_extension
 Then add to `/etc/osquery/extensions.load`:
 ```
 /usr/local/bin/node_packages_extension
-```
-
-## Building
-
-### Prerequisites
-
-- Go 1.21 or higher
-- osquery installed on your system
-
-### Build Instructions
-
-```bash
-# Clone the repository
-git clone https://github.com/HikaruEgashira/node-packages-osquery-extension.git
-cd node-packages-osquery-extension
-
-# Download dependencies
-go mod download
-
-# Build the extension
-go build -o node_packages_extension .
-
-# Run tests
-go test -v ./...
 ```
 
 ## Usage
@@ -199,6 +160,30 @@ The extension uses efficient scanning:
 - **Permission-safe**: Gracefully handles permission errors
 - **Memory efficient**: Streams large directories
 - **Fast JSON parsing**: Standard library performance
+
+## Building from Source
+
+### Prerequisites
+
+- Go 1.21 or higher
+- osquery installed on your system
+
+### Build Instructions
+
+```bash
+# Clone the repository
+git clone https://github.com/HikaruEgashira/node-packages-osquery-extension.git
+cd node-packages-osquery-extension
+
+# Download dependencies
+go mod download
+
+# Build the extension
+go build -o node_packages_extension .
+
+# Run tests
+go test -v ./...
+```
 
 ## Contributing
 
