@@ -1,6 +1,6 @@
 module github.com/HikaruEgashira/node-packages-osquery-extension
 
-go 1.24.7
+go 1.25
 
 require (
 	github.com/osquery/osquery-go v0.0.0-20250131154556-629f995b6947
@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/apache/thrift v0.20.0 // indirect
+	github.com/apache/thrift v0.23.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
