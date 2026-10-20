@@ -34,6 +34,12 @@ jobs:
         run: go mod verify
         timeout-minutes: 5
 
+      - name: Check go.mod and go.sum are tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+        timeout-minutes: 5
+
       - name: Vet
         run: go vet ./...
         timeout-minutes: 10
